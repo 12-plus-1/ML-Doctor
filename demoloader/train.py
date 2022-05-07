@@ -47,9 +47,9 @@ class model_training():
                 data_loader=self.trainloader,
                 # noise_multiplier=self.noise_multiplier,
                 max_grad_norm=self.max_grad_norm,
-                target_epsilon=self.epsilon
-                target_delta=self.delta
-                epochs=100
+                target_epsilon=self.epsilon,
+                target_delta=self.delta,
+                epochs=100,
             )
             # self.net = module_modification.convert_batchnorm_modules(self.net)
             # inspector = DPModelInspector()
