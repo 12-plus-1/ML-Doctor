@@ -14,14 +14,14 @@ from demoloader.DCGAN import *
 from utils.define_models import *
 from demoloader.dataloader import *
 
-
-def train_model(PATH, device, train_set, test_set, model, use_DP, noise, norm, delta):
+##
+def train_model(PATH, device, train_set, test_set, model, use_DP, noise, norm, delta, epsilon):
     train_loader = torch.utils.data.DataLoader(
         train_set, batch_size=64, shuffle=True, num_workers=2)
     test_loader = torch.utils.data.DataLoader(
         test_set, batch_size=64, shuffle=True, num_workers=2)
-    
-    model = model_training(train_loader, test_loader, model, device, use_DP, noise, norm, delta)
+    ##
+    model = model_training(train_loader, test_loader, model, device, use_DP, noise, norm, delta, epsilon)
     acc_train = 0
     acc_test = 0
 
@@ -175,6 +175,8 @@ def main():
     parser.add_argument('-ne', '--noise', type=float, default=1.3)
     parser.add_argument('-nm', '--norm', type=float, default=1.5)
     parser.add_argument('-d', '--delta', type=float, default=1e-5)
+    ##
+    parser.add_argument('-ep', '--epsilon', type=float, default=1)
     
     args = parser.parse_args()
 
@@ -191,12 +193,14 @@ def main():
     norm = args.norm
     delta = args.delta
     train_shadow = args.train_shadow
+    ##
+    epsilon = args.epsilon
     TARGET_PATH = "./demoloader/trained_model/" + dataset_name
 
     num_classes, target_train, target_test, shadow_train, shadow_test, target_model, shadow_model = prepare_dataset(dataset_name, attr, root)
-
+    ##
     if args.train_model:
-        train_model(TARGET_PATH, device, target_train, target_test, target_model, use_DP, noise, norm, delta)
+        train_model(TARGET_PATH, device, target_train, target_test, target_model, use_DP, noise, norm, delta, epsilon)
 
     # membership inference
     if args.attack_type == 0:
