@@ -10,6 +10,7 @@
 ```
 ## attack model
 ```python
+!python demo.py -dn=FMNIST -at=3
 !python demo.py -dn=FMNIST -ud -at=3
 ```
 
