@@ -18,15 +18,17 @@ def GAN_init(m):
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
 
-
+##
 class model_training():
-    def __init__(self, trainloader, testloader, model, device, use_DP, noise, norm, delta):
+    def __init__(self, trainloader, testloader, model, device, use_DP, noise, norm, delta, epsilon):
         self.use_DP = use_DP
         self.device = device
         self.delta = delta
         self.net = model.to(self.device)
         self.trainloader = trainloader
         self.testloader = testloader
+        ##
+        self.epsilon = epsilon
 
         if self.device == 'cuda':
             self.net = torch.nn.DataParallel(self.net)
@@ -36,15 +38,18 @@ class model_training():
         self.optimizer = optim.SGD(self.net.parameters(), lr=1e-2, momentum=0.9, weight_decay=5e-4)
 
         self.noise_multiplier, self.max_grad_norm = noise, norm
-        
+        ##
         if self.use_DP:
             self.privacy_engine = PrivacyEngine()
-            self.model, self.optimizer, self.trainloader = self.privacy_engine.make_private(
+            self.model, self.optimizer, self.trainloader = self.privacy_engine.make_private_with_epsilon(
                 module=model,
                 optimizer=self.optimizer,
                 data_loader=self.trainloader,
-                noise_multiplier=self.noise_multiplier,
+                # noise_multiplier=self.noise_multiplier,
                 max_grad_norm=self.max_grad_norm,
+                target_epsilon=self.epsilon
+                target_delta=self.delta
+                epochs=100
             )
             # self.net = module_modification.convert_batchnorm_modules(self.net)
             # inspector = DPModelInspector()
